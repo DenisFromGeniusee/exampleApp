@@ -37,7 +37,7 @@ export default function App() {
   const handleChange = name => event => {
     setValues({ ...values, [name]: event.target.value });
   };
-  const submitEvent = () => {
+  const submitEvent = React.useCallback(() => {
     const { lattersString } = values
     const arrayOfLatters = lattersString.split(",");
     let lettersPairs = []
@@ -49,7 +49,7 @@ export default function App() {
       }
     }
     setValues({ ...values, pairsArray: lettersPairs })
-  }
+  }, [values])
   return (
     <div className={classes.rootDiv}>
       <Paper className={classes.root}>
