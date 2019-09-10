@@ -3,10 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import { isEmpty } from 'lodash';
+import ListOfPairs from './ListOfPairs'
 
 const useStyles = makeStyles(theme => ({
   rootDiv: {
@@ -32,6 +30,7 @@ export default function App() {
   const [values, setValues] = React.useState({
     lattersString: '',
     pairsArray: [],
+    fieldError: false,
   });
 
   const handleChange = name => event => {
@@ -41,14 +40,19 @@ export default function App() {
     const { lattersString } = values
     const arrayOfLatters = lattersString.split(",");
     let lettersPairs = []
-    for (let index = 0; index < arrayOfLatters.length; index++) {
-      const firstElement = arrayOfLatters[index];
+    if (lattersString !== '') {
       for (let index = 0; index < arrayOfLatters.length; index++) {
-        const secondElement = arrayOfLatters[index];
-        lettersPairs.push({ firstElement, secondElement })
+        const firstElement = arrayOfLatters[index];
+        for (let index = 0; index < arrayOfLatters.length; index++) {
+          const secondElement = arrayOfLatters[index];
+          lettersPairs.push({ firstElement, secondElement })
+        }
       }
+      setValues({ ...values, pairsArray: lettersPairs, fieldError: false })
+    } else {
+      setValues({ ...values, fieldError: true })
     }
-    setValues({ ...values, pairsArray: lettersPairs })
+
   }, [values])
   return (
     <div className={classes.rootDiv}>
@@ -56,6 +60,7 @@ export default function App() {
         <TextField
           id="standard-name"
           label="Name"
+          error={values.fieldError}
           className={classes.textField}
           margin="none"
           value={values.lattersString}
@@ -68,23 +73,13 @@ export default function App() {
           onClick={submitEvent}
         >
           Ok
-          </Button>
-        {!isEmpty(values.pairsArray) &&
-          <div>
-            <h2>
-              Total count:{values.pairsArray.length}
-            </h2>
-            <List className={classes.listofPairs}>
-              {values.pairsArray.map(item =>
-                <ListItem>
-                  <ListItemText
-                    primary={`{${item.firstElement}, ${item.secondElement}}`}
-                  >
-                  </ListItemText>
-                </ListItem>
-              )}
-            </List>
-          </div>
+        </Button>
+        {!isEmpty(values.pairsArray) ?
+          <ListOfPairs
+            classes={classes}
+            values={values}
+          />
+          : null
         }
       </Paper>
     </div>
